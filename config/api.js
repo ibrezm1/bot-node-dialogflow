@@ -1,29 +1,41 @@
-var apiai = require('apiai');
+//var apiai = require('apiai');
 
 // read the api.ai docs : https://api.ai/docs/
 
-//Enter your API Key
-var app = apiai('2007fee6c3d14ef889535eb0fc8b181b');
+
+const dialogflow = require('@google-cloud/dialogflow');
+const uuid = require('uuid');
+const sessionId = uuid.v4();
+const projectId ='test-dialogflow-ycr9'
+
+const sessionClient = new dialogflow.SessionsClient({
+    keyFilename: './config/test-dialogflow-ycr9-d72b498a2ed1.json'
+});
+const sessionPath = sessionClient.projectAgentSessionPath(
+    projectId,
+    sessionId
+  );
+
 
 // Function which returns speech from api.ai
 var getRes = function(query) {
-  var request = app.textRequest(query, {
-      sessionId: '<unique session id>'
-  });
-const responseFromAPI = new Promise(
-        function (resolve, reject) {
-request.on('error', function(error) {
-    reject(error);
-});
-request.on('response', function(response) {
-  resolve(response.result.fulfillment.speech);
-});
-});
-request.end();
+  // The text query request.
+  const request = {
+    session: sessionPath,
+    queryInput: {
+      text: {
+        // The query to send to the dialogflow agent
+        text: query,
+        // The language used by the client (en-US)
+        languageCode: 'en-US',
+      },
+    },
+  };
+const responseFromAPI = sessionClient.detectIntent(request)
 return responseFromAPI;
 };
 
 // test the command :
-//getRes('hello').then(function(res){console.log(res)});
+//getRes('hello').then(function(res){console.log(res[0].queryResult.fulfillmentText)});
 
 module.exports = {getRes}

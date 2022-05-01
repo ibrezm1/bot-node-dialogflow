@@ -18,8 +18,8 @@ io.on('connection', function (socket) {
   socket.on('fromClient', function (data) {
     console.log(data.client);
          api.getRes(data.client).then(function(res){
-           console.log('response', res);
-            socket.emit('fromServer', { server: res });
+           console.log('response', res[0].queryResult.fulfillmentText);
+            socket.emit('fromServer', { server: res[0].queryResult.fulfillmentText });
          });
   });
 });

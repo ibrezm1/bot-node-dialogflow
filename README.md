@@ -28,3 +28,4 @@ Follow these steps below
 
 UI Design by [BotUI](https://github.com/moinism/botui).
 NLP Used [API.AI](https://www.api.ai).
+[Try this to collapse](https://mscrm16tech.com/2020/05/12/add-floating-chat-bot-microsoft-virtual-agent-on-power-portal-powerapps/)

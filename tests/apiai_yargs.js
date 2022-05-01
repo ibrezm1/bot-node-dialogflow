@@ -1,20 +1,48 @@
-var apiai = require('apiai');
+
 // Using Yargs to test api.ai response on console.
-var yargs = require('yargs');
 
-var app = apiai("your_api_key");
+const dialogflow = require('@google-cloud/dialogflow');
+const uuid = require('uuid');
+const sessionId = uuid.v4();
+const projectId ='test-dialogflow-ycr9'
 
-var request = app.textRequest(yargs.argv._[0], {
-	sessionId: '<unique session id>'
+const sessionClient = new dialogflow.SessionsClient({
+    keyFilename: '../config/test-dialogflow-ycr9-d72b498a2ed1.json'
+});
+const sessionPath = sessionClient.projectAgentSessionPath(
+    projectId,
+    sessionId
+  );
+
+
+
+
+  // The text query request.
+  const request = {
+    session: sessionPath,
+    queryInput: {
+      text: {
+        // The query to send to the dialogflow agent
+        text: 'hello',
+        // The language used by the client (en-US)
+        languageCode: 'en-US',
+      },
+    },
+  };
+
+  sessionClient.detectIntent(request).then(responses =>{
+	console.log('Detected intent');
+	const result = responses[0].queryResult;
+	console.log(`  Query: ${result.queryText}`);
+	console.log(`  Response: ${result.fulfillmentText}`);
+	if (result.intent) {
+	  console.log(`  Intent: ${result.intent.displayName}`);
+	} else {
+	  console.log('  No intent matched.');
+	}
+  }).catch((error) => {
+    console.log(error); // an error has occured
 });
 
-request.on('response', function(response) {
-	console.log(response.result.fulfillment.speech);
-});
 
-request.on('error', function(error) {
-	console.log(error);
-});
-
-request.end();
 
